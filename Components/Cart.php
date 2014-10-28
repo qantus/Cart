@@ -110,6 +110,20 @@ class Cart
         return false;
     }
 
+    public function increaseQuantity(ICartItem $object, array $data = [])
+    {
+        $item = $this->get($object, $data);
+        if ($item) {
+            $item['quantity'] += 1;
+            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $key = $this->makeKey($object, $data);
+            $this->getStorage()->remove($key);
+            $this->getStorage()->add($key, $item);
+            return true;
+        }
+        return false;
+    }
+
     public function decreaseQuantityByKey($key)
     {
         $positionKey = $this->getPositionByKey($key);
@@ -120,6 +134,20 @@ class Cart
             $item['price'] = $item['object']->getPrice() * $item['quantity'];
             $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
+            return true;
+        }
+        return false;
+    }
+
+    public function decreaseQuantity(ICartItem $object, array $data = [])
+    {
+        $item = $this->get($object, $data);
+        if ($item) {
+            $item['quantity'] -= 1;
+            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $key = $this->makeKey($object, $data);
+            $this->getStorage()->remove($key);
+            $this->getStorage()->add($key, $item);
             return true;
         }
         return false;
@@ -149,7 +177,11 @@ class Cart
 
     public function getQuantity()
     {
-        return 0;
+        $quantity = 0;
+        foreach ($this->getItems() as $item) {
+            $quantity += $item['quantity'];
+        }
+        return $quantity;
     }
 
     public function getTotal()

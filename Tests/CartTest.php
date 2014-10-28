@@ -59,4 +59,18 @@ class CartTest extends TestCase
         $this->assertEquals(2, count($cart->getItems()));
         $cart->clear();
     }
+
+    public function testIncrease()
+    {
+        $cart = new Cart();
+        $cart->add(new Product(['price' => 10, 'id' => 1]), 1);
+        $this->assertEquals(10, $cart->getTotal());
+        $this->assertEquals(1, count($cart->getItems()));
+        $cart->increaseQuantity(new Product(['price' => 10, 'id' => 1]));
+        $this->assertEquals(2, $cart->getQuantity());
+        $cart->decreaseQuantity(new Product(['price' => 10, 'id' => 1]));
+        $this->assertEquals(1, $cart->getQuantity());
+        $this->assertEquals(1, count($cart->getItems()));
+        $cart->clear();
+    }
 }
