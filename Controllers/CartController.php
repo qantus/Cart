@@ -18,7 +18,7 @@ use Mindy\Base\Mindy;
 use Modules\Cart\CartModule;
 use Modules\Core\Controllers\CoreController;
 
-abstract class BaseCartController extends CoreController
+class CartController extends CoreController
 {
     /**
      * @return \Modules\Cart\Components\Cart
@@ -34,8 +34,6 @@ abstract class BaseCartController extends CoreController
         $this->r->flash->success(CartModule::t('Product added'));
         $this->r->redirect('cart.list');
     }
-
-    abstract public function addInternal($uniqueId, $quantity = 1);
 
     public function actionList()
     {
