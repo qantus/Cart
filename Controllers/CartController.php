@@ -38,8 +38,6 @@ class CartController extends CoreController
     public function actionList()
     {
         $cart = $this->getCart();
-//        $cart->add(new Product(['price' => 10, 'id' => 1]), 1, ['color' => 'white']);
-//        $cart->add(new Product(['price' => 20, 'id' => 1]), 1, ['color' => 'black']);
         echo $this->render('cart/list.html', [
             'items' => $cart->getItems(),
             'total' => $cart->getTotal(),
