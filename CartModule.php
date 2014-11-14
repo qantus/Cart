@@ -24,4 +24,9 @@ class CartModule extends Module
             'class' => '\Modules\Cart\Components\Cart'
         ]);
     }
+
+    public function getCart()
+    {
+        return $this->getComponent('cart');
+    }
 }
