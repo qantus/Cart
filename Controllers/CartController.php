@@ -21,6 +21,11 @@ use Modules\Core\Controllers\CoreController;
 class CartController extends CoreController
 {
     /**
+     * @var string
+     */
+    public $listTemplate = 'cart/list.html';
+
+    /**
      * @return \Modules\Cart\Components\Cart
      */
     protected function getCart()
@@ -38,7 +43,7 @@ class CartController extends CoreController
     public function actionList()
     {
         $cart = $this->getCart();
-        echo $this->render('cart/list.html', [
+        echo $this->render($this->listTemplate, [
             'items' => $cart->getItems(),
             'total' => $cart->getTotal(),
         ]);
