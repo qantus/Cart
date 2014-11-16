@@ -24,6 +24,16 @@ class CartController extends CoreController
      * @var string
      */
     public $listTemplate = 'cart/list.html';
+    /**
+     * @var string
+     */
+    public $defaultListRoute = 'cart.list';
+
+    protected function getListRoute()
+    {
+        $module = Mindy::app()->getModule('Cart');
+        return $module->listRoute ? $module->listRoute : $this->defaultListRoute;
+    }
 
     /**
      * @return \Modules\Cart\Components\Cart
@@ -33,9 +43,9 @@ class CartController extends CoreController
         return Mindy::app()->getModule('Cart')->getComponent('cart');
     }
 
-    public function actionAdd($uniqueId, $quantity = 1)
+    public function actionAdd($uniqueId, $quantity = 1, $type = null)
     {
-        $this->addInternal($uniqueId, $quantity);
+        $this->addInternal($uniqueId, $quantity, $type);
         if ($this->request->isAjax) {
             echo $this->json([
                 'status' => true,
@@ -47,12 +57,16 @@ class CartController extends CoreController
             Mindy::app()->end();
         } else {
             $this->r->flash->success(CartModule::t('Product added'));
-            $this->r->redirect('cart.list');
+            $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
         }
     }
 
     public function actionList()
     {
+        $url = Mindy::app()->urlManager->reverse($this->listRoute);
+        if ($this->listRoute && strpos($this->request->path, $url) === false) {
+            $this->r->redirect($this->listRoute);
+        }
         $cart = $this->getCart();
         echo $this->render($this->listTemplate, [
             'items' => $cart->getItems(),
@@ -76,7 +90,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         } else {
             if ($isAjax) {
@@ -90,7 +104,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         }
     }
@@ -111,7 +125,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         } else {
             if ($isAjax) {
@@ -125,7 +139,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         }
     }
@@ -146,7 +160,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         } else {
             if ($isAjax) {
@@ -160,7 +174,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         }
     }
@@ -182,7 +196,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->success(CartModule::t('Position sucessfully removed'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         } else {
             if ($isAjax) {
@@ -196,7 +210,7 @@ class CartController extends CoreController
                 Mindy::app()->end();
             } else {
                 $this->r->flash->error(CartModule::t('Error has occurred'));
-                $this->r->redirect('cart.list');
+                $this->r->redirect($this->listRoute ? $this->listRoute : $this->defaultListRoute);
             }
         }
     }

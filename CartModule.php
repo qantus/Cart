@@ -18,6 +18,8 @@ use Mindy\Base\Module;
 
 class CartModule extends Module
 {
+    public $listRoute;
+
     public function init()
     {
         $this->setComponent('cart', [

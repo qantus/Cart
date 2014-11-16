@@ -25,4 +25,11 @@ interface ICartItem
      * @return int|float
      */
     public function getPrice();
+
+    /**
+     * @param $quantity
+     * @param $type
+     * @return int|float return total product price based on quantity and weight type
+     */
+    public function recalculate($quantity, $type);
 }

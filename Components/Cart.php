@@ -23,7 +23,7 @@ class Cart
     use Accessors, Configurator;
 
     /**
-     * @var
+     * @var string|array component configuration
      */
     public $storage;
     /**
@@ -52,21 +52,25 @@ class Cart
         return $this->getStorage()->get($this->makeKey($object, $data));
     }
 
-    public function add(ICartItem $object, $quantity = 1, array $data = [])
+    public function add(ICartItem $object, $quantity = 1, $type = null, array $data = [])
     {
         $key = $this->makeKey($object, $data);
         if ($this->has($object, $data)) {
-            $item = $this->get($object, $data);
-            $item['quantity'] += $quantity;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $oldItem = $this->get($object, $data);
+            $item = new CartItem([
+                'object' => $oldItem->object,
+                'data' => $oldItem->data,
+                'quantity' => $oldItem->quantity + $quantity,
+                'type' => $type,
+            ]);
             $this->getStorage()->remove($key);
         } else {
-            $item = [
-                'object' => $object,
+            $item = new CartItem([
                 'quantity' => $quantity,
+                'type' => $type,
                 'data' => $data,
-                'price' => $object->getPrice() * $quantity
-            ];
+                'object' => $object
+            ]);
         }
         $this->getStorage()->add($key, $item);
         return $this;
@@ -83,13 +87,9 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-
-            $item['quantity'] = $quantity;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $item->quantity = $quantity;
             $this->getStorage()->remove($positionKey);
-
             $this->getStorage()->add($positionKey, $item);
-
             return true;
         }
         return false;
@@ -101,8 +101,7 @@ class Cart
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
 
-            $item['quantity'] += 1;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $item->quantity += 1;
             $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
             return true;
@@ -114,8 +113,7 @@ class Cart
     {
         $item = $this->get($object, $data);
         if ($item) {
-            $item['quantity'] += 1;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $item->quantity += 1;
             $key = $this->makeKey($object, $data);
             $this->getStorage()->remove($key);
             $this->getStorage()->add($key, $item);
@@ -129,9 +127,7 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-
-            $item['quantity'] -= 1;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $item->quantity -= 1;
             $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
             return true;
@@ -143,8 +139,7 @@ class Cart
     {
         $item = $this->get($object, $data);
         if ($item) {
-            $item['quantity'] -= 1;
-            $item['price'] = $item['object']->getPrice() * $item['quantity'];
+            $item->quantity -= 1;
             $key = $this->makeKey($object, $data);
             $this->getStorage()->remove($key);
             $this->getStorage()->add($key, $item);
@@ -179,7 +174,7 @@ class Cart
     {
         $quantity = 0;
         foreach ($this->getItems() as $item) {
-            $quantity += $item['quantity'];
+            $quantity += $item->quantity;
         }
         return $quantity;
     }
@@ -188,11 +183,14 @@ class Cart
     {
         $total = 0;
         foreach ($this->getItems() as $item) {
-            $total += $item['price'];
+            $total += $item->getPrice();
         }
         return $total;
     }
 
+    /**
+     * @return \Modules\Cart\Components\CartItem[]
+     */
     public function getItems()
     {
         return $this->getStorage()->getItems();
