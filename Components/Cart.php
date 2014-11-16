@@ -195,4 +195,12 @@ class Cart
     {
         return $this->getStorage()->getItems();
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsEmpty()
+    {
+        return $this->getStorage()->count() === 0;
+    }
 }
