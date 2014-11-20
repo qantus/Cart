@@ -1,9 +1,9 @@
 <?php
 /**
- * 
+ *
  *
  * All rights reserved.
- * 
+ *
  * @author Falaleev Maxim
  * @email max@studio107.ru
  * @version 1.0
@@ -59,6 +59,7 @@ class CartItem
 
     public function getPrice()
     {
-        return $this->getObject()->recalculate($this->quantity, $this->type);
+        $price = $this->getObject()->recalculate($this->quantity, $this->type);
+        return (float)str_replace(',', '', $price);
     }
 }
