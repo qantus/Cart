@@ -88,7 +88,6 @@ class Cart
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
             $item->quantity = $quantity;
-            $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -102,7 +101,6 @@ class Cart
             $item = $this->getStorage()->get($positionKey);
 
             $item->quantity += 1;
-            $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -115,7 +113,6 @@ class Cart
         if ($item) {
             $item->quantity += 1;
             $key = $this->makeKey($object, $data);
-            $this->getStorage()->remove($key);
             $this->getStorage()->add($key, $item);
             return true;
         }
@@ -128,7 +125,6 @@ class Cart
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
             $item->quantity -= 1;
-            $this->getStorage()->remove($positionKey);
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -141,7 +137,6 @@ class Cart
         if ($item) {
             $item->quantity -= 1;
             $key = $this->makeKey($object, $data);
-            $this->getStorage()->remove($key);
             $this->getStorage()->add($key, $item);
             return true;
         }
