@@ -31,6 +31,9 @@ class Cart
      */
     private $_storage;
 
+    /**
+     * @return SessionStorage
+     */
     public function getStorage()
     {
         if ($this->_storage === null) {
@@ -39,6 +42,11 @@ class Cart
         return $this->_storage;
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return string
+     */
     protected function makeKey(ICartItem $object, array $data)
     {
         return strtr("{class}{unique_id}", [
@@ -47,11 +55,23 @@ class Cart
         ]);
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return mixed
+     */
     public function get(ICartItem $object, array $data = [])
     {
         return $this->getStorage()->get($this->makeKey($object, $data));
     }
 
+    /**
+     * @param ICartItem $object
+     * @param int $quantity
+     * @param null $type
+     * @param array $data
+     * @return $this
+     */
     public function add(ICartItem $object, $quantity = 1, $type = null, array $data = [])
     {
         $key = $this->makeKey($object, $data);
@@ -76,12 +96,21 @@ class Cart
         return $this;
     }
 
+    /**
+     * @param $key
+     * @return null
+     */
     protected function getPositionByKey($key)
     {
         $data = array_values(array_flip($this->getStorage()->getData()));
         return isset($data[$key]) ? $data[$key] : null;
     }
 
+    /**
+     * @param $key
+     * @param $quantity
+     * @return bool
+     */
     public function updateQuantityByKey($key, $quantity)
     {
         $positionKey = $this->getPositionByKey($key);
@@ -94,6 +123,10 @@ class Cart
         return false;
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function increaseQuantityByKey($key)
     {
         $positionKey = $this->getPositionByKey($key);
@@ -107,6 +140,11 @@ class Cart
         return false;
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return bool
+     */
     public function increaseQuantity(ICartItem $object, array $data = [])
     {
         $item = $this->get($object, $data);
@@ -119,6 +157,10 @@ class Cart
         return false;
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function decreaseQuantityByKey($key)
     {
         $positionKey = $this->getPositionByKey($key);
@@ -131,6 +173,11 @@ class Cart
         return false;
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return bool
+     */
     public function decreaseQuantity(ICartItem $object, array $data = [])
     {
         $item = $this->get($object, $data);
@@ -143,28 +190,48 @@ class Cart
         return false;
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function removeByKey($key)
     {
         $key = $this->getPositionByKey($key);
         return $key === null ? false : $this->getStorage()->remove($key);
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return bool
+     */
     public function remove(ICartItem $object, array $data = [])
     {
         return $this->getStorage()->remove($this->makeKey($object, $data));
     }
 
+    /**
+     * @param ICartItem $object
+     * @param array $data
+     * @return bool
+     */
     public function has(ICartItem $object, array $data = [])
     {
         $key = $this->makeKey($object, $data);
         return $this->getStorage()->has($key);
     }
 
+    /**
+     * @return $this
+     */
     public function clear()
     {
         return $this->getStorage()->clear();
     }
 
+    /**
+     * @return int
+     */
     public function getQuantity()
     {
         $quantity = 0;
@@ -174,6 +241,9 @@ class Cart
         return $quantity;
     }
 
+    /**
+     * @return float|int
+     */
     public function getTotal()
     {
         $total = 0;
