@@ -125,7 +125,7 @@ class ExampleDiscount implements IDiscount
 
 ## Отображение старой / новой цены
 
-```
+```php
 class Product implements ICartItem
 {
     ...
