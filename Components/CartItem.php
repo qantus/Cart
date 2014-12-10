@@ -124,7 +124,10 @@ class CartItem
      */
     private function fetchPrice()
     {
-        $this->_price = $this->getObject()->recalculate($this->_quantity, $this->_type, $this->_data);
+        $object = $this->getObject();
+        if ($object) {
+            $this->_price = $this->getObject()->recalculate($this->_quantity, $this->_type, $this->_data);
+        }
         return $this;
     }
 
