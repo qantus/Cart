@@ -18,13 +18,20 @@ use Mindy\Base\Module;
 
 class CartModule extends Module
 {
+    /**
+     * @var
+     */
     public $listRoute;
+    /**
+     * @var array
+     */
+    public $cartConfig = [
+        'class' => '\Modules\Cart\Components\Cart',
+    ];
 
     public function init()
     {
-        $this->setComponent('cart', [
-            'class' => '\Modules\Cart\Components\Cart'
-        ]);
+        $this->setComponent('cart', $this->cartConfig);
     }
 
     public function getCart()

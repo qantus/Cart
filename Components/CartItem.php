@@ -29,15 +29,77 @@ class CartItem
     /**
      * @var string weight type
      */
-    public $type;
+    private $_type;
     /**
      * @var
      */
-    public $quantity = 1;
+    private $_quantity = 1;
     /**
      * @var array
      */
-    public $data = [];
+    private $_data = [];
+    /**
+     * @var float original calculated product price based on price * quantity with custom data. See $_data.
+     */
+    private $_price;
+    /**
+     * @var float price with applied discounts
+     */
+    private $_discountPrice;
+
+    /**
+     * @param $data
+     * @return CartItem
+     */
+    public function setData($data)
+    {
+        $this->_data = $data;
+        return $this->fetchPrice();
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    /**
+     * @param $type
+     * @return CartItem
+     */
+    public function setType($type)
+    {
+        $this->_type = $type;
+        return $this->fetchPrice();
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
+
+    /**
+     * @param $quantity
+     * @return CartItem
+     */
+    public function setQuantity($quantity)
+    {
+        $this->_quantity = $quantity;
+        return $this->fetchPrice();
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->_quantity;
+    }
 
     /**
      * @param ICartItem $object
@@ -46,7 +108,7 @@ class CartItem
     public function setObject(ICartItem $object)
     {
         $this->_object = $object;
-        return $this;
+        return $this->fetchPrice();
     }
 
     /**
@@ -57,9 +119,30 @@ class CartItem
         return $this->_object;
     }
 
+    /**
+     * @return $this
+     */
+    private function fetchPrice()
+    {
+        $this->_price = $this->getObject()->recalculate($this->_quantity, $this->_type, $this->_data);
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
     public function getPrice()
     {
-        $price = $this->getObject()->recalculate($this->quantity, $this->type);
-        return (float)str_replace(',', '', $price);
+        return (float)str_replace(',', '', $this->_discountPrice ? $this->_discountPrice : $this->_price);
+    }
+
+    /**
+     * @param IDiscount[] $discounts
+     */
+    public function applyDiscount(Cart $cart, array $discounts)
+    {
+        foreach ($discounts as $discount) {
+            $this->_discountPrice = $discount->applyDiscount($cart, $this);
+        }
     }
 }

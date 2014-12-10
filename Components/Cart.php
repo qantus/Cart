@@ -14,6 +14,7 @@
 
 namespace Modules\Cart\Components;
 
+use Mindy\Helper\Creator;
 use Mindy\Helper\Traits\Accessors;
 use Mindy\Helper\Traits\Configurator;
 use Modules\Cart\Interfaces\ICartItem;
@@ -27,9 +28,17 @@ class Cart
      */
     public $storage;
     /**
+     * @var IDiscount[]
+     */
+    public $discounts = [];
+    /**
      * @var \Modules\Cart\Components\SessionStorage
      */
     private $_storage;
+    /**
+     * @var IDiscount[]
+     */
+    private $_discounts = null;
 
     /**
      * @return SessionStorage
@@ -92,6 +101,7 @@ class Cart
                 'object' => $object
             ]);
         }
+        $item->applyDiscount($this, $this->getDiscounts());
         $this->getStorage()->add($key, $item);
         return $this;
     }
@@ -116,7 +126,8 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-            $item->quantity = $quantity;
+            $item->setQuantity($quantity);
+            $item->applyDiscount($this, $this->getDiscounts());
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -132,8 +143,8 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-
-            $item->quantity += 1;
+            $item->setQuantity($item->getQuantity() + 1);
+            $item->applyDiscount($this, $this->getDiscounts());
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -149,7 +160,8 @@ class Cart
     {
         $item = $this->get($object, $data);
         if ($item) {
-            $item->quantity += 1;
+            $item->setQuantity($item->getQuantity() + 1);
+            $item->applyDiscount($this, $this->getDiscounts());
             $key = $this->makeKey($object, $data);
             $this->getStorage()->add($key, $item);
             return true;
@@ -166,7 +178,8 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-            $item->quantity -= 1;
+            $item->setQuantity($item->getQuantity() - 1);
+            $item->applyDiscount($this, $this->getDiscounts());
             $this->getStorage()->add($positionKey, $item);
             return true;
         }
@@ -182,7 +195,8 @@ class Cart
     {
         $item = $this->get($object, $data);
         if ($item) {
-            $item->quantity -= 1;
+            $item->setQuantity($item->getQuantity() - 1);
+            $item->applyDiscount($this, $this->getDiscounts());
             $key = $this->makeKey($object, $data);
             $this->getStorage()->add($key, $item);
             return true;
@@ -267,5 +281,28 @@ class Cart
     public function getIsEmpty()
     {
         return $this->getStorage()->count() === 0;
+    }
+
+    public function applyDiscount(ICartItem $object, $quantity = 1, $type = null, array $data = [])
+    {
+        $item = new CartItem([
+            'quantity' => $quantity,
+            'type' => $type,
+            'data' => $data,
+            'object' => $object
+        ]);
+        $item->applyDiscount($this, $this->getDiscounts());
+        return $item->getPrice();
+    }
+
+    public function getDiscounts()
+    {
+        if ($this->_discounts === null) {
+            foreach($this->discounts as $className) {
+                $this->_discounts[] = Creator::createObject($className);
+            }
+        }
+
+        return $this->_discounts;
     }
 }
