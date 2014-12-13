@@ -119,6 +119,11 @@ class CartItem
         return $this->_object;
     }
 
+    public function recalculate()
+    {
+        return $this->getObject()->recalculate($this->_quantity, $this->_type, $this->_data);
+    }
+
     /**
      * @return $this
      */
@@ -126,7 +131,7 @@ class CartItem
     {
         $object = $this->getObject();
         if ($object) {
-            $this->_price = $this->getObject()->recalculate($this->_quantity, $this->_type, $this->_data);
+            $this->_price = $this->recalculate();
         }
         return $this;
     }
