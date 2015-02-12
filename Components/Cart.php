@@ -298,6 +298,7 @@ class Cart
     public function getDiscounts()
     {
         if ($this->_discounts === null) {
+            $this->_discounts = [];
             foreach($this->discounts as $className) {
                 $this->_discounts[] = Creator::createObject($className);
             }
