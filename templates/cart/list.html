@@ -20,9 +20,9 @@
                     {{ position.object }}
                 </td>
                 <td>
-                    <a href="{% url 'cart.quantity_decrease' key %}">-</a>
-                    <a href="{% url 'cart.quantity' key 2 %}">{{ position.quantity }}</a>
-                    <a href="{% url 'cart.quantity_increase' key %}">+</a>
+                    <a href="{% url 'cart:quantity_decrease' key %}">-</a>
+                    <a href="{% url 'cart:quantity' key 2 %}">{{ position.quantity }}</a>
+                    <a href="{% url 'cart:quantity_increase' key %}">+</a>
                 </td>
                 <td>
                     {% for name, value in position.data %}
@@ -33,7 +33,7 @@
                     {{ position.price }} рублей
                 </td>
                 <td>
-                    <a href="{% url 'cart.delete' key %}" title="{{ t('Delete', 'cart') }}">{{ t('Delete', 'cart') }}</a>
+                    <a href="{% url 'cart:delete' key %}" title="{{ t('Delete', 'cart') }}">{{ t('Delete', 'cart') }}</a>
                 </td>
             </tr>
             {% endfor %}

@@ -14,6 +14,7 @@
 
 namespace Modules\Cart;
 
+use Mindy\Base\Mindy;
 use Mindy\Base\Module;
 
 class CartModule extends Module
@@ -28,6 +29,14 @@ class CartModule extends Module
     public $cartConfig = [
         'class' => '\Modules\Cart\Components\Cart',
     ];
+
+    public static function preConfigure()
+    {
+        $tpl = Mindy::app()->template;
+        $tpl->addHelper('cart', function() {
+            return Mindy::app()->getModule('Cart')->getCart();
+        });
+    }
 
     public function init()
     {

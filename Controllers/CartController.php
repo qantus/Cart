@@ -27,7 +27,11 @@ class CartController extends CoreController
     /**
      * @var string
      */
-    public $defaultListRoute = 'cart.list';
+    public $defaultListRoute = 'cart:list';
+    /**
+     * @var null|string
+     */
+    public $listRoute = null;
 
     protected function getListRoute()
     {
