@@ -110,7 +110,7 @@ class Cart
      * @param $key
      * @return null
      */
-    protected function getPositionByKey($key)
+    public function getPositionByKey($key)
     {
         $data = array_values(array_flip($this->getStorage()->getData()));
         return isset($data[$key]) ? $data[$key] : null;
