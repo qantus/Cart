@@ -14,6 +14,7 @@
 
 namespace Modules\Cart\Components;
 
+use Mindy\Base\Mindy;
 use Mindy\Helper\Creator;
 use Mindy\Helper\Traits\Accessors;
 use Mindy\Helper\Traits\Configurator;
@@ -32,6 +33,10 @@ class Cart
      */
     public $discounts = [];
     /**
+     * @var bool force renew object when call getItems() method
+     */
+    public $forceFetch = false;
+    /**
      * @var \Modules\Cart\Components\SessionStorage
      */
     private $_storage;
@@ -40,13 +45,35 @@ class Cart
      */
     private $_discounts = null;
 
+    public function init()
+    {
+        $signal = $this->getEventManager();
+        $signal->handler($this, 'addItem', [$this, 'onAddItem']);
+        $signal->handler($this, 'removeItem', [$this, 'onRemoveItem']);
+    }
+
+    public function getEventManager()
+    {
+        return Mindy::app()->signal;
+    }
+
+    public function onAddItem($item)
+    {
+
+    }
+
+    public function onRemoveItem($item)
+    {
+
+    }
+
     /**
      * @return SessionStorage
      */
     public function getStorage()
     {
         if ($this->_storage === null) {
-            $this->_storage = new SessionStorage();
+            $this->_storage = new SessionStorage($this);
         }
         return $this->_storage;
     }
@@ -95,10 +122,10 @@ class Cart
             $this->getStorage()->remove($key);
         } else {
             $item = new CartItem([
+                'object' => $object,
+                'data' => $data,
                 'quantity' => $quantity,
                 'type' => $type,
-                'data' => $data,
-                'object' => $object
             ]);
         }
         $item->applyDiscount($this, $this->getDiscounts());
@@ -272,7 +299,21 @@ class Cart
      */
     public function getItems()
     {
-        return $this->getStorage()->getItems();
+        $newItems = [];
+        $items = $this->getStorage()->getItems();
+        if ($this->forceFetch) {
+            foreach ($items as $item) {
+                $object = $item->getObject();
+                if ($newObject = $object->objects()->get(['pk' => $object->pk])) {
+                    $item->setObject($newObject);
+                    $newItems[] = $item;
+                } else {
+                    $this->remove($object, []);
+                    continue;
+                }
+            }
+        }
+        return $newItems;
     }
 
     /**
@@ -299,7 +340,7 @@ class Cart
     {
         if ($this->_discounts === null) {
             $this->_discounts = [];
-            foreach($this->discounts as $className) {
+            foreach ($this->discounts as $className) {
                 $this->_discounts[] = Creator::createObject($className);
             }
         }

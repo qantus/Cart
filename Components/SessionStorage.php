@@ -10,8 +10,15 @@ class SessionStorage
 {
     const KEY = 'cart';
 
-    public function __construct()
+    /**
+     * @var Cart
+     */
+    protected $cart;
+
+    public function __construct(Cart $cart)
     {
+        $this->cart = $cart;
+
         if (!isset($_SESSION[self::KEY])) {
             $_SESSION[self::KEY] = [];
         }
@@ -34,6 +41,7 @@ class SessionStorage
     public function remove($key)
     {
         if ($this->has($key)) {
+            $this->cart->getEventManager()->send($this->cart, 'onRemoveItem', unserialize($_SESSION[self::KEY][$key]));
             unset($_SESSION[self::KEY][$key]);
             return true;
         }
@@ -47,6 +55,7 @@ class SessionStorage
      */
     public function add($key, $value)
     {
+        $this->cart->getEventManager()->send($this->cart, 'onAddItem', $value);
         $_SESSION[self::KEY][$key] = serialize($value);
         return $this;
     }
@@ -56,7 +65,7 @@ class SessionStorage
      */
     public function count()
     {
-        return count(isset($_SESSION[self::KEY]) ? $_SESSION[self::KEY] : $_SESSION[self::KEY] = []);
+        return count($_SESSION[self::KEY]);
     }
 
     /**
@@ -86,8 +95,7 @@ class SessionStorage
      */
     public function has($key)
     {
-        $data = $this->getData();
-        return array_key_exists($key, $data);
+        return array_key_exists($key, $this->getData());
     }
 
     /**
@@ -95,6 +103,6 @@ class SessionStorage
      */
     public function getData()
     {
-        return isset($_SESSION[self::KEY]) ? $_SESSION[self::KEY] : $_SESSION[self::KEY] = [];
+        return $_SESSION[self::KEY];
     }
 }
