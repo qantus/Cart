@@ -62,8 +62,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Product added'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Product added'));
+                $this->request->redirect($this->getListRoute());
             }
         } else {
             if ($isAjax) {
@@ -76,8 +76,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Error has occurred'));
+                $this->request->redirect($this->getListRoute());
             }
         }
     }
@@ -87,7 +87,7 @@ abstract class CartController extends CoreController
         $listRoute = $this->getListRoute();
         $url = Mindy::app()->urlManager->reverse($listRoute);
         if ($listRoute && strpos($this->request->path, $url) === false) {
-            $this->r->redirect($listRoute);
+            $this->request->redirect($listRoute);
         }
         $cart = $this->getCart();
         echo $this->render($this->listTemplate, [
@@ -111,8 +111,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Quantity updated'));
+                $this->request->redirect($this->getListRoute());
             }
         } else {
             if ($isAjax) {
@@ -125,8 +125,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Error has occurred'));
+                $this->request->redirect($this->getListRoute());
             }
         }
     }
@@ -146,8 +146,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Quantity updated'));
+                $this->request->redirect($this->getListRoute());
             }
         } else {
             if ($isAjax) {
@@ -160,8 +160,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Error has occurred'));
+                $this->request->redirect($this->getListRoute());
             }
         }
     }
@@ -181,8 +181,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Quantity updated'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Quantity updated'));
+                $this->request->redirect($this->getListRoute());
             }
         } else {
             if ($isAjax) {
@@ -195,8 +195,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Error has occurred'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Error has occurred'));
+                $this->request->redirect($this->getListRoute());
             }
         }
     }
@@ -217,8 +217,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->success(CartModule::t('Position sucessfully removed'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->success(CartModule::t('Position sucessfully removed'));
+                $this->request->redirect($this->getListRoute());
             }
         } else {
             if ($isAjax) {
@@ -231,8 +231,8 @@ abstract class CartController extends CoreController
                 ]);
                 Mindy::app()->end();
             } else {
-                $this->r->flash->error(CartModule::t('Error has occurred'));
-                $this->r->redirect($this->getListRoute());
+                $this->request->flash->error(CartModule::t('Error has occurred'));
+                $this->request->redirect($this->getListRoute());
             }
         }
     }
