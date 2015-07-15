@@ -299,9 +299,9 @@ class Cart
      */
     public function getItems()
     {
-        $newItems = [];
         $items = $this->getStorage()->getItems();
         if ($this->forceFetch) {
+            $newItems = [];
             foreach ($items as $item) {
                 $object = $item->getObject();
                 if ($newObject = $object->objects()->get(['pk' => $object->pk])) {
@@ -312,8 +312,9 @@ class Cart
                     continue;
                 }
             }
+            $items = $newItems;
         }
-        return $newItems;
+        return $items;
     }
 
     /**
