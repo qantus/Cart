@@ -20,7 +20,7 @@ use Modules\Cart\Interfaces\ICartItem;
 
 class CartItem
 {
-    use Configurator, Accessors;
+    use Accessors;
 
     /**
      * @var \Mindy\Orm\Model|\Modules\Cart\Interfaces\ICartItem
@@ -46,6 +46,14 @@ class CartItem
      * @var float price with applied discounts
      */
     private $_discountPrice;
+
+    public function __construct(array $config = [])
+    {
+        foreach ($config as $key => $value) {
+            $this->{'_' . $key} = $value;
+        }
+        $this->fetchPrice();
+    }
 
     /**
      * @param $data
@@ -129,8 +137,7 @@ class CartItem
      */
     private function fetchPrice()
     {
-        $object = $this->getObject();
-        if ($object) {
+        if ($this->getObject()) {
             $this->_price = $this->recalculate();
         }
         return $this;

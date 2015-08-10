@@ -128,6 +128,7 @@ class Cart
                 'type' => $type,
             ]);
         }
+
         $item->applyDiscount($this, $this->getDiscounts());
         $this->getStorage()->add($key, $item);
         return $this;
@@ -309,7 +310,6 @@ class Cart
                     $newItems[] = $item;
                 } else {
                     $this->remove($object, []);
-                    continue;
                 }
             }
             $items = $newItems;
