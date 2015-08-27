@@ -27,7 +27,10 @@ class Cart
     /**
      * @var string|array component configuration
      */
-    public $storage;
+    public $storageConfig = [
+        'class' => '\Modules\Cart\Components\SessionStorage'
+    ];
+    public $storageKey = 'cart';
     /**
      * @var IDiscount[]
      */
@@ -73,7 +76,7 @@ class Cart
     public function getStorage()
     {
         if ($this->_storage === null) {
-            $this->_storage = new SessionStorage($this);
+            $this->_storage = Creator::createObject($this->storageConfig, $this, $this->storageKey);
         }
         return $this->_storage;
     }

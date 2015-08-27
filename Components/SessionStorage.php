@@ -8,19 +8,22 @@ namespace Modules\Cart\Components;
  */
 class SessionStorage
 {
-    const KEY = 'cart';
-
     /**
      * @var Cart
      */
     protected $cart;
+    /**
+     * @var string
+     */
+    protected $key;
 
-    public function __construct(Cart $cart)
+    public function __construct(Cart $cart, $key = 'cart')
     {
+        $this->key = $key;
         $this->cart = $cart;
 
-        if (!isset($_SESSION[self::KEY])) {
-            $_SESSION[self::KEY] = [];
+        if (!isset($_SESSION[$this->key])) {
+            $_SESSION[$this->key] = [];
         }
     }
 
@@ -41,8 +44,8 @@ class SessionStorage
     public function remove($key)
     {
         if ($this->has($key)) {
-            $this->cart->getEventManager()->send($this->cart, 'onRemoveItem', unserialize($_SESSION[self::KEY][$key]));
-            unset($_SESSION[self::KEY][$key]);
+            $this->cart->getEventManager()->send($this->cart, 'onRemoveItem', unserialize($_SESSION[$this->key][$key]));
+            unset($_SESSION[$this->key][$key]);
             return true;
         }
         return false;
@@ -56,7 +59,7 @@ class SessionStorage
     public function add($key, $value)
     {
         $this->cart->getEventManager()->send($this->cart, 'onAddItem', $value);
-        $_SESSION[self::KEY][$key] = serialize($value);
+        $_SESSION[$this->key][$key] = serialize($value);
         return $this;
     }
 
@@ -65,7 +68,7 @@ class SessionStorage
      */
     public function count()
     {
-        return count($_SESSION[self::KEY]);
+        return count($_SESSION[$this->key]);
     }
 
     /**
@@ -73,7 +76,7 @@ class SessionStorage
      */
     public function clear()
     {
-        $_SESSION[self::KEY] = [];
+        $_SESSION[$this->key] = [];
         return $this;
     }
 
@@ -103,6 +106,6 @@ class SessionStorage
      */
     public function getData()
     {
-        return $_SESSION[self::KEY];
+        return $_SESSION[$this->key];
     }
 }
