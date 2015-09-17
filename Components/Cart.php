@@ -209,9 +209,13 @@ class Cart
         $positionKey = $this->getPositionByKey($key);
         if ($positionKey) {
             $item = $this->getStorage()->get($positionKey);
-            $item->setQuantity($item->getQuantity() - 1);
-            $item->applyDiscount($this, $this->getDiscounts());
-            $this->getStorage()->add($positionKey, $item);
+            if ($item->getQuantity() > 1) {
+                $item->setQuantity($item->getQuantity() - 1);
+                $item->applyDiscount($this, $this->getDiscounts());
+                $this->getStorage()->add($positionKey, $item);
+            } else {
+                $this->removeByKey($key);
+            }
             return true;
         }
         return false;
@@ -226,10 +230,14 @@ class Cart
     {
         $item = $this->get($object, $data);
         if ($item) {
-            $item->setQuantity($item->getQuantity() - 1);
-            $item->applyDiscount($this, $this->getDiscounts());
-            $key = $this->makeKey($object, $data);
-            $this->getStorage()->add($key, $item);
+            if ($item->getQuantity() > 1) {
+                $item->setQuantity($item->getQuantity() - 1);
+                $item->applyDiscount($this, $this->getDiscounts());
+                $key = $this->makeKey($object, $data);
+                $this->getStorage()->add($key, $item);
+            } else {
+                $this->remove($object);
+            }
             return true;
         }
         return false;
